@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Not So Medium - Tech Blog</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Authentication Modal -->
+    <div class="modal hidden" id="authModal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content">
+            <div class="modal__header">
+                <h2 id="authModalTitle">Sign In</h2>
+                <button class="modal__close" id="closeAuthModal">&times;</button>
+            </div>
+            <div class="modal__body">
+                <form id="authForm">
+                    <div class="auth-tabs">
+                        <button type="button" class="auth-tab active" data-tab="login">Login</button>
+                        <button type="button" class="auth-tab" data-tab="signup">Sign Up</button>
+                    </div>
+                    
+                    <div class="form-group" id="nameField" style="display: none;">
+                        <label class="form-label" for="authName">Full Name</label>
+                        <input type="text" class="form-control" id="authName" placeholder="Enter your full name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="authEmail">Email</label>
+                        <input type="email" class="form-control" id="authEmail" placeholder="Enter your email" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="authPassword">Password</label>
+                        <input type="password" class="form-control" id="authPassword" placeholder="Enter your password" required>
+                    </div>
+                    
+                    <div class="form-group" id="roleField" style="display: none;">
+                        <label class="form-label" for="authRole">Role</label>
+                        <select class="form-control" id="authRole">
+                            <option value="Reader">Reader - Read articles and upvote topics</option>
+                            <option value="Writer">Writer - Write articles and suggest topics</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="btn btn--primary btn--full-width" id="authSubmit">Sign In</button>
+                    
+                    <div class="demo-accounts">
+                        <p class="demo-title">Demo Accounts:</p>
+                        <div class="demo-buttons">
+                            <button type="button" class="btn btn--outline btn--sm demo-btn" data-email="writer@demo.com" data-password="writer123">Demo Writer</button>
+                            <button type="button" class="btn btn--outline btn--sm demo-btn" data-email="reader@demo.com" data-password="reader123">Demo Reader</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Article Creation Modal -->
+    <div class="modal hidden" id="articleModal">
+        <div class="modal__backdrop"></div>
+        <div class="modal__content modal__content--large">
+            <div class="modal__header">
+                <h2>Write New Article</h2>
+                <button class="modal__close" id="closeArticleModal">&times;</button>
+            </div>
+            <div class="modal__body">
+                <form id="articleForm">
+                    <div class="form-group">
+                        <label class="form-label" for="articleTitle">Title</label>
+                        <input type="text" class="form-control" id="articleTitle" placeholder="Enter article title" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="articleExcerpt">Excerpt</label>
+                        <textarea class="form-control" id="articleExcerpt" placeholder="Brief description of your article" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label" for="articleCategory">Category</label>
+                            <select class="form-control" id="articleCategory" required>
+                                <option value="">Select a category</option>
+                                <option value="JavaScript">JavaScript</option>
+                                <option value="Python">Python</option>
+                                <option value="AI/ML">AI/ML</option>
+                                <option value="Web Development">Web Development</option>
+                                <option value="DevOps">DevOps</option>
+                                <option value="Cybersecurity">Cybersecurity</option>
+                                <option value="Mobile Development">Mobile Development</option>
+                                <option value="Data Science">Data Science</option>
+                                <option value="Cloud Computing">Cloud Computing</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label" for="articleReadTime">Read Time</label>
+                            <input type="text" class="form-control" id="articleReadTime" placeholder="5 min read" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="articleImage">Image URL (optional)</label>
+                        <input type="url" class="form-control" id="articleImage" placeholder="https://example.com/image.jpg">
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn btn--outline" id="cancelArticle">Cancel</button>
+                        <button type="submit" class="btn btn--primary">Publish Article</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <header class="header">
+        <div class="container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <h1>Not So Medium</h1>
+                </div>
+                <div class="header__search">
+                    <input type="text" class="form-control search-input" placeholder="Search articles..." id="searchInput">
+                </div>
+                <nav class="header__nav">
+                    <!-- Not authenticated state -->
+                    <div class="auth-buttons" id="authButtons">
+                        <button class="btn btn--outline" id="openAuthModal">Sign In</button>
+                    </div>
+                    
+                    <!-- Authenticated state -->
+                    <div class="user-menu hidden" id="userMenu">
+                        <button class="btn btn--primary writer-only" id="writeArticleBtn">Write Article</button>
+                        <div class="user-profile">
+                            <div class="user-info">
+                                <span class="user-name" id="userName"></span>
+                                <span class="user-role" id="userRole"></span>
+                            </div>
+                            <div class="user-dropdown">
+                                <button class="user-avatar" id="userAvatar">
+                                    <span id="userInitials"></span>
+                                </button>
+                                <div class="dropdown-menu hidden" id="dropdownMenu">
+                                    <div class="dropdown-item user-info-item">
+                                        <div class="user-details">
+                                            <span class="user-name-dropdown" id="userNameDropdown"></span>
+                                            <span class="user-email-dropdown" id="userEmailDropdown"></span>
+                                            <span class="user-role-dropdown" id="userRoleDropdown"></span>
+                                        </div>
+                                    </div>
+                                    <hr class="dropdown-divider">
+                                    <button class="dropdown-item logout-btn" id="logoutBtn">
+                                        <span>Logout</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <div class="container">
+            <div class="content-layout">
+                <!-- Left side - Articles (70%) -->
+                <section class="articles-section">
+                    <div class="filters">
+                        <div class="filter-group">
+                            <label for="timeFilter" class="form-label">Time</label>
+                            <select id="timeFilter" class="form-control filter-select">
+                                <option value="all">All time</option>
+                                <option value="7">Last 7 days</option>
+                                <option value="30">Last 30 days</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="categoryFilter" class="form-label">Category</label>
+                            <select id="categoryFilter" class="form-control filter-select">
+                                <option value="All Categories">All Categories</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="articles-grid" id="articlesGrid">
+                        <!-- Articles will be populated by JavaScript -->
+                    </div>
+
+                    <div class="pagination" id="pagination">
+                        <button class="btn btn--outline" id="prevBtn" disabled>Previous</button>
+                        <div class="page-numbers" id="pageNumbers"></div>
+                        <button class="btn btn--outline" id="nextBtn">Next</button>
+                    </div>
+                </section>
+
+                <!-- Right side - Sidebar (30%) -->
+                <aside class="sidebar">
+                    <!-- Welcome Message for Authenticated Users -->
+                    <div class="card welcome-message hidden" id="welcomeMessage">
+                        <div class="card__body">
+                            <h3 id="welcomeTitle">Welcome back!</h3>
+                            <p id="welcomeText"></p>
+                        </div>
+                    </div>
+
+                    <!-- Carousel Section -->
+                    <div class="card carousel-section">
+                        <div class="card__header">
+                            <h3>External Resources</h3>
+                        </div>
+                        <div class="carousel-container">
+                            <div class="carousel" id="resourceCarousel">
+                                <!-- Carousel items will be populated by JavaScript -->
+                            </div>
+                            <div class="carousel-controls">
+                                <button class="carousel-btn" id="prevCarousel">‹</button>
+                                <button class="carousel-btn" id="nextCarousel">›</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Topic Suggestion Section -->
+                    <div class="card topic-suggestion">
+                        <div class="card__header">
+                            <h3>Suggest a Topic</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="permission-info reader-only hidden">
+                                <p class="info-message">
+                                    <span class="info-icon">ℹ️</span>
+                                    Writers can suggest topics. Readers can upvote existing topics.
+                                </p>
+                            </div>
+                            <form id="topicForm" class="topic-form writer-only">
+                                <input type="text" class="form-control" id="topicInput" placeholder="What would you like to read about?" required>
+                                <button type="submit" class="btn btn--primary btn--full-width">Suggest Topic</button>
+                            </form>
+                            <div class="auth-prompt hidden" id="authPrompt">
+                                <p>Sign in to suggest topics and upvote</p>
+                                <button class="btn btn--primary btn--full-width" id="authPromptBtn">Sign In</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Popular Topics Section -->
+                    <div class="card popular-topics">
+                        <div class="card__header">
+                            <h3>Popular Suggested Topics</h3>
+                        </div>
+                        <div class="card__body">
+                            <div class="topics-list" id="topicsList">
+                                <!-- Topics will be populated by JavaScript -->
+                            </div>
+                        </div>
+                    </div>
+                </aside>
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>
